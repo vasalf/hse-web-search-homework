@@ -39,7 +39,7 @@ class ExtractedDocument:
         for tag in soup.findAll("a"):
             self.leadsTo.append(str(tag.get("href")))
         elements = filter(ExtractedDocument.__visible, soup.findAll(text=True))
-        texts = map(str, elements)
+        texts = map(lambda e: str(e) + " ", elements)
         self.content = "".join(texts)
 
     def write(self, dirName):
