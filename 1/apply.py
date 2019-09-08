@@ -4,7 +4,7 @@ import argparse
 import os.path
 from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage
 from pipeline.text_processor_stage import TextProcessorStage
-from pipeline.stats_counters import StopwordsCounter
+from pipeline.stats_counters import StopwordsCounter, SimpleStats
 
 
 def main():
@@ -23,7 +23,8 @@ def main():
     stages = [
         # Turns file lines from the input into the list of normalized words.
         TextProcessorStage(),
-        PipelineImmutableStage(StopwordsCounter())
+        PipelineImmutableStage(StopwordsCounter()),
+        PipelineImmutableStage(SimpleStats()),
     ]
 
     doc_id = 0

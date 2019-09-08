@@ -29,8 +29,6 @@ class StopwordsCounter(PipelineStage):
                 if word in self.__english_stopwords:
                     self.english_stopwords += 1
 
-        return consumer_input
-
     def dump(self):
         print(
             "Stopwords rate: total: {}, {} out of {}, russian: {}, {} out of {}, english: {}, {} out of {}"
@@ -39,3 +37,28 @@ class StopwordsCounter(PipelineStage):
                 self.russian_stopwords + self.english_stopwords, self.russian_words + self.english_words,
                 self.russian_stopwords / self.russian_words, self.russian_stopwords, self.russian_words,
                 self.english_stopwords / self.english_words, self.english_stopwords, self.english_words))
+
+
+class SimpleStats(PipelineStage):
+    def __init__(self):
+        self.not_english_words = 0
+        self.english_words = 0
+        self.english_lengths_sum = 0
+        self.not_english_lengths_sum = 0
+
+    def accept(self, consumer_input: PipedInput):
+        for word in consumer_input.get_text():
+            if is_english(word):
+                self.english_words += 1
+                self.english_lengths_sum += len(word)
+            else:
+                self.not_english_words += 1
+                self.not_english_lengths_sum += len(word)
+
+    def dump(self):
+        print("English words rate: {}, {} out of {}"
+              .format(self.english_words / (self.english_words + self.not_english_words), self.english_words, (self.english_words + self.not_english_words)))
+        print("Average word length: all words: {}, (belo)russian: {}, english: {}."
+              .format((self.english_lengths_sum + self.not_english_lengths_sum) / (self.english_words + self.not_english_words),
+                      self.not_english_lengths_sum / self.not_english_words,
+                      self.english_lengths_sum / self.english_words))
