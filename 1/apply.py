@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import errno
 import os.path
 import sys
 import time
@@ -33,7 +34,18 @@ def main():
     ]
     # Register your pipeline stage here.
 
-    with open('logs_{}.txt'.format(time.time()), 'w') as logs:
+    try:
+        os.makedirs("logs")
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+    try:
+        os.makedirs("results")
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
+    with open(os.path.join('logs', '{}.txt'.format(time.time())), 'w') as logs:
         sys.stdout = logs
 
         doc_id = 0

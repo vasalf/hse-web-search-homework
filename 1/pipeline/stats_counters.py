@@ -1,4 +1,6 @@
 import math
+import os
+import time
 
 import nltk
 import operator
@@ -90,7 +92,7 @@ class DictionaryStats(PipelineStage):
         idfs = sorted([(k, math.log(self.documents_count / v)) for k, v in self.idf.items()],
                       key=operator.itemgetter(1), reverse=True)[:self.__TOP_IDFS]
 
-        with open("top_frequent_words.txt", 'w') as file:
+        with open(os.path.join("results", "top_frequent_words_{}.txt".format(time.time())), 'w') as file:
             file.writelines(map(lambda x: "{} {}\n".format(x[0], x[1]), sorted_frequencies[:self.__TOP_FREQUENCIES]))
-        with open("top_idf_words.txt", 'w') as file:
+        with open(os.path.join("results", "top_idf_words_{}.txt".format(time.time())), 'w') as file:
             file.writelines(map(lambda x: "{} {}\n".format(x[0], x[1]), idfs[:self.__TOP_IDFS]))
