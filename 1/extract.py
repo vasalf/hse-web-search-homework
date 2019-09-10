@@ -13,12 +13,42 @@ import os.path
 import re
 import xml.dom.minidom as minidom
 
+class ExtractorStats:
+    def __init__(self):
+        self.docs = 0
+        self.docLengths = []
+        self.docWords = []
+        self.docRatio = []
+
+    @property
+    def averageDocLengths(self):
+        return sum(self.docLengths) / self.docs
+
+    @property
+    def averageDocWords(self):
+        return sum(self.docWords) / self.docs
+
+    def addDocument(self, document):
+        content = document.content
+        initialSize = document.initialSize
+        self.docs += 1
+        self.docLengths.append(len(content))
+        self.docWords.append(len(content.split()))
+        self.docRatio.append(len(content) / initialSize)
+
+    def collect(self, stats):
+        self.docs += stats.docs
+        self.docLengths += stats.doc_lengths
+        self.docWords += stats.doc_words
+        self.docRatio += stats.doc_ratio
+
 
 class ExtractedDocument:
     def __init__(self, docId, url, content):
         self.docId = docId
         self.url = codecs.decode(base64.b64decode(url), encoding="cp1251")
         self.content = codecs.decode(base64.b64decode(content), encoding="cp1251")
+        self.initialSize = len(self.content)
         self.__processContent()
 
     @staticmethod
@@ -76,6 +106,7 @@ class MiniDOMExtractor(ExtractorBase):
         return ''.join(rc)
 
     def addDocument(self, path):
+        stats = ExtractorStats()
         dom = minidom.parse(path)
         for document in dom.getElementsByTagName("document"):
             content = self.getText(document.getElementsByTagName("content")[0])
@@ -83,6 +114,8 @@ class MiniDOMExtractor(ExtractorBase):
             docId = self.getText(document.getElementsByTagName("docID")[0])
             extractedDocument = ExtractedDocument(int(docId), url, content)
             extractedDocument.write(ExtractorBase.RESULT_DIR)
+            stats.addDocument(extractedDocument)
+        return stats
 
 
 def extract(xmlId):
@@ -95,7 +128,18 @@ def main():
     parser.add_argument("-p", "--processes", type=int, help="Number of processes to run (default: 4)", default=4)
     args = parser.parse_args()
     p = mp.Pool(args.processes)
-    p.map(extract, list(range(10)))
+    stats = ExtractorStats()
+    for stat in p.map(extract, list(range(10))):
+        stats.collect(stat)
+    with open("extractor_stats.json", "w") as extractorStats:
+        json.dump({
+            "documents": stats.docs,
+            "averageDocLength": stats.averageDocLengths,
+            "averageDocWords": stats.averageDocWords,
+            "docLengths": stats.docLenghts,
+            "docWords": stats.docWords,
+            "docRatio": stats.docRatio
+        }, ensure_ascii=False)
 
 
 if __name__ == "__main__":

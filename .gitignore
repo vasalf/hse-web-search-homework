@@ -125,6 +125,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+1/byweb_for_course.zip
+1/byweb_for_course/*
+1/extracted/*
 byweb_for_course.zip
 byweb_for_course/*
 extracted/*
