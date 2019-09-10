@@ -91,9 +91,9 @@ class DictionaryStats(PipelineStage):
     def dump(self):
         sorted_frequencies = sorted(self.tf.items(), key=operator.itemgetter(1), reverse=True)
         idfs = sorted([(k, math.log(self.documents_count / v)) for k, v in self.idf.items()],
-                      key=operator.itemgetter(1), reverse=True)[:self.__TOP_IDFS]
+                      key=operator.itemgetter(1), reverse=True)
 
         with open(os.path.join("results", "top_frequent_words_{}.txt".format(self.timestamp)), 'w') as file:
-            file.writelines(map(lambda x: "{} {}\n".format(x[0], x[1]), sorted_frequencies[:self.__TOP_FREQUENCIES]))
+            file.writelines(map(lambda x: "{} {}\n".format(x[0], x[1]), sorted_frequencies))
         with open(os.path.join("results", "top_idf_words_{}.txt".format(self.timestamp)), 'w') as file:
-            file.writelines(map(lambda x: "{} {}\n".format(x[0], x[1]), idfs[:self.__TOP_IDFS]))
+            file.writelines(map(lambda x: "{} {}\n".format(x[0], x[1]), idfs))
