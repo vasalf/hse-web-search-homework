@@ -13,6 +13,8 @@ from pipeline.json_unpacker_stage import JsonUnpackerStage
 
 
 def main():
+    timestamp = time.time()
+
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-d", "--documents", type=int, help="Number of documents to process", default=100)
@@ -29,7 +31,7 @@ def main():
         TextProcessorStage(),
         JsonUnpackerStage(),
         PipelineImmutableStage(StopwordsCounter()),
-        PipelineImmutableStage(DictionaryStats()),
+        PipelineImmutableStage(DictionaryStats(timestamp)),
         PipelineImmutableStage(SimpleStats()),
     ]
     # Register your pipeline stage here.
@@ -45,7 +47,7 @@ def main():
         if e.errno != errno.EEXIST:
             raise
 
-    with open(os.path.join('logs', '{}.txt'.format(time.time())), 'w') as logs:
+    with open(os.path.join('logs', '{}.txt'.format(timestamp)), 'w') as logs:
         sys.stdout = logs
 
         doc_id = 0
@@ -56,7 +58,7 @@ def main():
 
             if os.path.exists(text_path) and os.path.exists(meta_path):
                 print("Found files {} and {}. {}/{} processed.".format(text_path, meta_path, documents_counter,
-                                                                       args.documents))
+                                                                       args.documents), file=sys.stderr)
                 with open(text_path, 'r', encoding=args.encoding) as text_file:
                     with open(meta_path, 'r', encoding=args.encoding) as meta_file:
                         text = text_file.readlines()
