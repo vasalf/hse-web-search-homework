@@ -23,11 +23,7 @@ class ExtractedDocument:
 
     @staticmethod
     def __visible(element):
-        if element.parent.name in ["style", "script", "head", "[document]", "title"]:
-            return False
-        elif re.match("<!--.*-->", str(element.encode("utf-8"))):
-            return False
-        return True
+        return element.parent.name not in ["style", "script", "head", "[document]", "title"]
 
     def __processContent(self):
         soup = bs4.BeautifulSoup(self.content, features="lxml")
@@ -38,6 +34,8 @@ class ExtractedDocument:
         self.leadsTo = []
         for tag in soup.findAll("a"):
             self.leadsTo.append(str(tag.get("href")))
+        for comments in soup.findAll(string=lambda text: isinstance(text, bs4.Comment)):
+            comments.extract()
         elements = filter(ExtractedDocument.__visible, soup.findAll(text=True))
         texts = map(lambda e: str(e) + " ", elements)
         self.content = "".join(texts)
