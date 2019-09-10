@@ -3,6 +3,7 @@
 import argparse
 import os.path
 import sys
+import time
 
 from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage
 from pipeline.text_processor_stage import TextProcessorStage
@@ -32,7 +33,7 @@ def main():
     ]
     # Register your pipeline stage here.
 
-    with open('logs.txt', 'w') as logs:
+    with open('logs_{}.txt'.format(time.time()), 'w') as logs:
         sys.stdout = logs
 
         doc_id = 0
