@@ -5,6 +5,7 @@ import os.path
 from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage
 from pipeline.text_processor_stage import TextProcessorStage
 from pipeline.stats_counters import StopwordsCounter, SimpleStats
+from pipeline.json_unpacker_stage import JsonUnpackerStage
 
 
 def main():
@@ -19,13 +20,14 @@ def main():
 
     print("Ready to process {} files in {} directory.".format(args.documents, args.input))
 
-    # Register your pipeline stage here.
     stages = [
         # Turns file lines from the input into the list of normalized words.
         TextProcessorStage(),
+        JsonUnpackerStage(),
         PipelineImmutableStage(StopwordsCounter()),
         PipelineImmutableStage(SimpleStats()),
     ]
+    # Register your pipeline stage here.
 
     doc_id = 0
     documents_counter = 0
