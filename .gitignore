@@ -128,3 +128,6 @@ dmypy.json
 byweb_for_course.zip
 byweb_for_course/*
 extracted/*
+
+# logs and outputs
+*.txt
