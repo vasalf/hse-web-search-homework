@@ -4,6 +4,7 @@ from collections import defaultdict
 import json
 from urllib.parse import urlparse, urlunparse, urljoin
 import sys, os
+import networkx as nx
 
 def absoluteURL(base, relative):
     try:
@@ -20,9 +21,8 @@ def absoluteURL(base, relative):
 
 class GraphBuilder(PipelineStage):
     def __init__(self):
-        self.graph_from = defaultdict(list)
-        self.graph_to = defaultdict(list)
-        
+        self.graph = nx.DiGraph()
+
         # URL-to-index mappings
         self.indexes = {}
         self.inv_indexes = {}
@@ -49,36 +49,23 @@ class GraphBuilder(PipelineStage):
             full = absoluteURL(base, l)
             i = self.index_of(full)
             if i != base_i:
-                self.graph_to[i].append(base_i)
-                self.graph_from[base_i].append(i)
+                self.graph.add_edge(base_i, i)
 
-
-    def dump_graph(self, vertices, result):
-        with open(os.path.join("results", "graph.gml"), 'w') as file:
+    def dump_graph(self, name, g):
+        with open(os.path.join("results", "{}.gml".format(name)), 'w') as file:
             file.write("graph\n[\n")
-            for k in vertices:
+            for k in g.nodes():
                 file.write("  node\n  [\n   id {}\n   label \"{}\"\n  ]\n".format(k, self.inv_indexes[k]))
-            for to_v, from_list in result.items():
-                for from_v in from_list:
-                    file.write("  edge\n  [\n   source {}\n   target {}\n  ]\n".format(from_v, to_v))
+            for to_v, from_v in g.edges():
+                file.write("  edge\n  [\n   source {}\n   target {}\n  ]\n".format(from_v, to_v))
             file.write("]\n")
 
     def dump(self):
-
         # we filter only URLs from documents, removing all other links from leadsTo
-        result = {}
-        for to_v in self.bases:
-            from_list = [from_v for from_v in self.graph_to[to_v] if from_v in self.bases]
-            if len(from_list) > 0:
-                result[to_v] = from_list
-        
-        # so the vertices are non-isolated pages from pipeline
-        vertices = set()
-        for to_v, from_list in result.items():
-            vertices.add(to_v)
-            for from_v in from_list:
-                vertices.add(from_v)
+        result = nx.DiGraph()
+        for f, t in self.graph.subgraph(self.bases).edges():
+            result.add_edge(f, t)
+        self.dump_graph("graph_full", result)
+        print("Graph saved to results/graph_full.gml")
+        print("PageRank:{}".format(nx.pagerank(result)))
 
-        self.dump_graph(vertices, result)
-        print("Graph saved to results/graph.gml")
-        
