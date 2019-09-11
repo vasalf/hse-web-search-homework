@@ -38,9 +38,9 @@ class ExtractorStats:
 
     def collect(self, stats):
         self.docs += stats.docs
-        self.docLengths += stats.doc_lengths
-        self.docWords += stats.doc_words
-        self.docRatio += stats.doc_ratio
+        self.docLengths += stats.docLengths
+        self.docWords += stats.docWords
+        self.docRatio += stats.docRatio
 
 
 class ExtractedDocument:
@@ -120,7 +120,7 @@ class MiniDOMExtractor(ExtractorBase):
 
 def extract(xmlId):
     extractor = MiniDOMExtractor()
-    extractor.addDocument("byweb_for_course/byweb.{}.xml".format(xmlId))
+    return extractor.addDocument("byweb_for_course/byweb.{}.xml".format(xmlId))
 
 
 def main():
@@ -131,15 +131,15 @@ def main():
     stats = ExtractorStats()
     for stat in p.map(extract, list(range(10))):
         stats.collect(stat)
-    with open("extractor_stats.json", "w") as extractorStats:
+    with open("results/extractor_stats.json", "w") as extractorStats:
         json.dump({
             "documents": stats.docs,
             "averageDocLength": stats.averageDocLengths,
             "averageDocWords": stats.averageDocWords,
-            "docLengths": stats.docLenghts,
+            "docLengths": stats.docLengths,
             "docWords": stats.docWords,
             "docRatio": stats.docRatio
-        }, ensure_ascii=False)
+        }, extractorStats, ensure_ascii=False)
 
 
 if __name__ == "__main__":
