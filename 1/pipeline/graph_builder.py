@@ -19,9 +19,18 @@ def absoluteURL(base, relative):
         print("Error parsing {}".format(relative))
         return None
 
+# subgraph without isolated nodes
+def subgraph(g, nodes):
+    result = nx.DiGraph()
+    for f, t in g.subgraph(nodes).edges():
+        result.add_edge(f, t)
+    return result
+
+
 class GraphBuilder(PipelineStage):
-    def __init__(self):
+    def __init__(self, pagerank_top):
         self.graph = nx.DiGraph()
+        self.pagerank_top = pagerank_top
 
         # URL-to-index mappings
         self.indexes = {}
@@ -62,10 +71,12 @@ class GraphBuilder(PipelineStage):
 
     def dump(self):
         # we filter only URLs from documents, removing all other links from leadsTo
-        result = nx.DiGraph()
-        for f, t in self.graph.subgraph(self.bases).edges():
-            result.add_edge(f, t)
+        result = subgraph(self.graph, self.bases)
         self.dump_graph("graph_full", result)
         print("Graph saved to results/graph_full.gml")
-        print("PageRank:{}".format(nx.pagerank(result)))
 
+        pr = nx.pagerank(result)
+        top_pr = sorted(pr, key=pr.get, reverse=True)[:(self.pagerank_top)]
+        top_graph = subgraph(result, top_pr)
+        self.dump_graph("graph_top", top_graph)
+        print("Graph saved to results/graph_top.gml")

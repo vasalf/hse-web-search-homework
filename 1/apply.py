@@ -31,7 +31,7 @@ def main():
         # Turns file lines from the input into the list of normalized words.
         TextProcessorStage(),
         JsonUnpackerStage(),
-        PipelineImmutableStage(GraphBuilder()),        
+        PipelineImmutableStage(GraphBuilder(150)),        
         PipelineImmutableStage(StopwordsCounter()),
         PipelineImmutableStage(DictionaryStats(timestamp)),
         PipelineImmutableStage(SimpleStats()),
