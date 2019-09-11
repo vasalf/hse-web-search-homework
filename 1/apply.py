@@ -50,7 +50,7 @@ def main():
             raise
 
     with open(os.path.join('logs', '{}.txt'.format(timestamp)), 'w') as logs:
-        #sys.stdout = logs
+        sys.stdout = logs
 
         doc_id = 0
         documents_counter = 0
