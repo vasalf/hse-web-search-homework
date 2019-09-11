@@ -10,6 +10,7 @@ from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage
 from pipeline.text_processor_stage import TextProcessorStage
 from pipeline.stats_counters import StopwordsCounter, SimpleStats, DictionaryStats
 from pipeline.json_unpacker_stage import JsonUnpackerStage
+from pipeline.graph_builder import GraphBuilder
 
 
 def main():
@@ -30,6 +31,7 @@ def main():
         # Turns file lines from the input into the list of normalized words.
         TextProcessorStage(),
         JsonUnpackerStage(),
+        PipelineImmutableStage(GraphBuilder()),        
         PipelineImmutableStage(StopwordsCounter()),
         PipelineImmutableStage(DictionaryStats(timestamp)),
         PipelineImmutableStage(SimpleStats()),
@@ -48,7 +50,7 @@ def main():
             raise
 
     with open(os.path.join('logs', '{}.txt'.format(timestamp)), 'w') as logs:
-        sys.stdout = logs
+        #sys.stdout = logs
 
         doc_id = 0
         documents_counter = 0
