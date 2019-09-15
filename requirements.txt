@@ -3,3 +3,4 @@ lxml
 pymystem3
 nltk
 networkx
+matplotlib

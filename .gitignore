@@ -134,3 +134,7 @@ extracted/*
 
 # logs and outputs
 *.txt
+
+*.aux
+*.log
+*.pdf
