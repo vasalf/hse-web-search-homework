@@ -20,17 +20,15 @@ INDEX_BODY = {
         }
     }
 }
+ELASTIC_HOST, ELASTIC_USER, ELASTIC_PWD = open("credentials.txt", "r").read().split()
 
 class Document:
     def indexAction(self):
         return {
             "_op_type": "index",
             "_index": self.index,
-            "_type": "document",
             "_id": self.id,
-            "_source": {
-                "url": self.url
-            },
+            "url": self.url,
             "title": self.title,
             "body": self.content
         }
@@ -82,7 +80,8 @@ def indexSize(es, index):
 
 
 def main():
-    es = elasticsearch.Elasticsearch()
+    es = elasticsearch.Elasticsearch(hosts=[ELASTIC_HOST],
+                                     http_auth=(ELASTIC_USER, ELASTIC_PWD))
 
     es.indices.create(index="extracted", body=INDEX_BODY, ignore=400)
 
