@@ -127,7 +127,9 @@ dmypy.json
 
 1/byweb_for_course.zip
 1/byweb_for_course/*
+2/byweb_for_course/*
 1/extracted/*
+2/extracted/*
 byweb_for_course.zip
 byweb_for_course/*
 extracted/*

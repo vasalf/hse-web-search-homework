@@ -4,3 +4,4 @@ pymystem3
 nltk
 networkx
 matplotlib
+elasticsearch>=7.0.0
