@@ -27,16 +27,25 @@ def get_query_info(query):
 
 def run_search(es, queries, search, outname):
     results = {}
+    qtimes = {}
     for i, query in enumerate(queries):
         try:
-            print("{}: query {}/{} ({}): {}".format(outname, i, len(queries), query["qid"], query["qtext"]))
+            start = timeit.default_timer()
             search_result = search(es, query)
-            results[query["qid"]] = [ {"score": hit['_score'], "id": hit["_id"]} for hit in search_result["hits"]["hits"] ]
+            time = timeit.default_timer() - start
+            
+            qid = query["qid"]
+            qtimes[qid] = time
+            results[qid] = [ {"score": hit['_score'], "id": hit["_id"]} for hit in search_result["hits"]["hits"] ]
+            print("{}: query {}/{} ({}): {}".format(outname, i, len(queries), qid, query["qtext"]), end="")
+            print(" in {0:.3f} s".format(time))
         except Exception as e:
             print("query failed: {}".format(query), file=sys.stderr)
             print(e, file=sys.stderr)
     with open(os.path.join("results", "{}.json".format(outname)), 'w') as file:
-        json.dump(results, file)
+         json.dump(results, file)
+    with open(os.path.join("results", "{}.json".format("time_" + outname)), 'w') as file:
+         json.dump(qtimes, file)
 
 def get_relevant_sizes(tasks):
     relevant_sizes = {}
@@ -58,7 +67,6 @@ def get_queries():
     for i, query in enumerate(all_queries):
         qid, qtext = get_query_info(query)
         if qid in relevant_sizes:
-            print("{} queries loaded".format(i + 1), end="\r")
             queries.append({ "qid": qid, "qtext": qtext, "size": relevant_sizes[qid] })
     return queries
 
@@ -74,5 +82,6 @@ def main():
     print("{} queries loaded".format(len(queries)))
     run_search(es, queries, es_search_basic, "basic")
     run_search(es, queries, es_search_rprecision, "rprecision")
+    
 if __name__ == "__main__":
     main()
