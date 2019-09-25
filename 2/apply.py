@@ -7,7 +7,8 @@ import sys
 import time
 
 from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage, PipelineDumpingStage
-from pipeline.text_processor_stage import TextLemmatizerStage, TextStemmerStage
+from pipeline.text_processor_stage import TextLemmatizerStage, TextStemmerStage, TextWithHeaderStage
+from pipeline.json_unpacker_stage import JsonUnpackerStage
 
 class StringHolder:
     def __init__(self):
@@ -33,11 +34,14 @@ def main():
 
     lemm_holder = StringHolder()
     stem_holder = StringHolder()
+    header_holder = StringHolder()
 
     stages = [
         # Turns file lines from the input into the list of normalized words.
         PipelineDumpingStage(TextLemmatizerStage(), lemm_holder),
         PipelineDumpingStage(TextStemmerStage(), stem_holder),
+        JsonUnpackerStage(),
+        PipelineDumpingStage(TextWithHeaderStage(), header_holder),
     ]
     # Register your pipeline stage here.
 
@@ -46,6 +50,7 @@ def main():
         os.makedirs("results")
         os.makedirs("lemmatized")
         os.makedirs("stemmed")
+        os.makedirs("headered")
         print("Created directories", file=sys.stderr)
     except OSError as e:
         if e.errno != errno.EEXIST:
@@ -63,6 +68,7 @@ def main():
             if os.path.exists(text_path) and os.path.exists(meta_path):
                 lemm_holder.s = os.path.join("lemmatized", "{:>07d}".format(doc_id))
                 stem_holder.s = os.path.join("stemmed", "{:>07d}".format(doc_id))
+                header_holder.s = os.path.join("headered", "{:>07d}".format(doc_id))
 
                 print("Found files {} and {}. {}/{} processed.".format(text_path, meta_path, documents_counter,
                                                                        args.documents), file=sys.stderr)

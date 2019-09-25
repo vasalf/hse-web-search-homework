@@ -1,8 +1,10 @@
+import sys
+
 from pymystem3 import Mystem
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.stem.snowball import RussianStemmer
-
+import json
 from utils import *
 
 from pipeline.pipeline import PipelineStage, PipedInput
@@ -41,6 +43,15 @@ class TextStemmerStage(PipelineStage):
             if is_english(token):
                 result.append(self.english_stemmer.stem(token))
         return consumer_input.new(text=" ".join(result))
+
+    def dump(self):
+        pass
+
+
+class TextWithHeaderStage(PipelineStage):
+    def accept(self, consumer_input: PipedInput):
+        text = consumer_input.get_meta()['title'] + " . " + consumer_input.get_text()
+        return consumer_input.new(text=text, meta=json.dumps(consumer_input.get_meta()))
 
     def dump(self):
         pass
