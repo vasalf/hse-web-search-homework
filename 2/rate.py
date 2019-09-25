@@ -35,7 +35,7 @@ def map_at_k(expected, actual_raw, k):
             p_i, _ = precision_recall(expected, actual_raw[:i])
             p += p_i
             n += 1
-    return p / n
+    return try_divide(p, n)
 
 def precision_recall(expected, actual_raw):
     actual = set([doc["id"] for doc in actual_raw])
