@@ -30,7 +30,7 @@ def get_query_info(query):
     return qid, qtext
 
 
-def run_search(es, queries, search, outname, index):
+def run_search(es, queries, search, outpath, index):
     results = {}
     qtimes = {}
     for i, query in enumerate(queries):
@@ -47,9 +47,9 @@ def run_search(es, queries, search, outname, index):
         except Exception as e:
             print("Query failed: {}".format(query), file=sys.stderr)
             print(e, file=sys.stderr)
-    with open(outname, "w") as file:
+    with open(outpath, "w") as file:
          json.dump(results, file)
-    with open(outname + "_times", "w") as file:
+    with open(outpath + "_times", "w") as file:
          json.dump(qtimes, file)
 
 
@@ -83,8 +83,8 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i", "--index", type=str, help="Index to search in", default="extracted")
-    parser.add_argument("-o", "--output", type=str, help="Output file name", default="output")
-    parser.add_argument("-m", "--mode", type=str, help="Query mode", default="basic")
+    parser.add_argument("-o", "--outdir", type=str, help="Output directory name", default="results")
+    parser.add_argument("-m", "--mode", type=str, help="Query mode", default="top20")
 
     args = parser.parse_args()
 
@@ -94,15 +94,10 @@ def main():
     queries = get_queries()
     print("{} queries loaded".format(len(queries)))
     
-    if args.mode == "basic":
-        search_mode = es_search_basic
-    elif args.mode == "rprecision":
-        search_mode = es_search_rprecision
-    else:
-        print("No such mode {}".format(args.mode), file=sys.stderr)
-        return
-    
-    run_search(es, queries, search=search_mode, outname=args.output, index=args.index)
+    if args.mode == "top20" or args.mode == "full":
+        run_search(es, queries, search=es_search_basic, outpath=os.path.join(args.outdir, "top20"), index=args.index)
+    if args.mode == "rprecision" or args.mode == "full":
+        run_search(es, queries, search=es_search_basic, outpath=os.path.join(args.outdir, "rprecision"), index=args.index)
     
     
 if __name__ == "__main__":
