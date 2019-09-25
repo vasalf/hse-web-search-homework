@@ -10,42 +10,48 @@ import os.path
 import timeit
 import xml.dom.minidom as minidom
 import sys
+import argparse
 
 QUERIES_XML = "web2008_adhoc.xml"
 RELEVANT_TABLE = "or_relevant-minus_table.xml"
+ELASTIC_HOST, ELASTIC_USER, ELASTIC_PWD = open("credentials.txt", "r").read().split()
 
-def es_search_basic(es, query):
-    return es.search(size=20, index="extracted", body={"_source":["_score", "_id"], "query": {"match": {"body": query["qtext"]}}})
+def es_search_basic(es, query, index):
+    return es.search(size=20, index=index, body={"_source":["_score", "_id"], "query": {"match": {"body": query["qtext"]}}})
 
-def es_search_rprecision(es, query):
-    return es.search(size=query["size"], index="extracted", body={"_source":["_score", "_id"], "query": {"match": {"body": query["qtext"]}}})
+
+def es_search_rprecision(es, query, index):
+    return es.search(size=query["size"], index=index, body={"_source":["_score", "_id"], "query": {"match": {"body": query["qtext"]}}})
+    
     
 def get_query_info(query):
     qid = query.getAttribute("id")
     qtext = query.getElementsByTagName("querytext")[0].firstChild.data
     return qid, qtext
 
-def run_search(es, queries, search, outname):
+
+def run_search(es, queries, search, outname, index):
     results = {}
     qtimes = {}
     for i, query in enumerate(queries):
         try:
             start = timeit.default_timer()
-            search_result = search(es, query)
+            search_result = search(es, query, index)
             time = timeit.default_timer() - start
             
             qid = query["qid"]
             qtimes[qid] = time
-            results[qid] = [ {"score": hit['_score'], "id": hit["_id"]} for hit in search_result["hits"]["hits"] ]
-            print("{}: query {}/{} ({}): {}".format(outname, i, len(queries), qid, query["qtext"]), end="")
+            results[qid] = [ {"score": hit["_score"], "id": hit["_id"]} for hit in search_result["hits"]["hits"] ]
+            print("Query {}/{} ({}): {}".format(i, len(queries), qid, query["qtext"]), end="")
             print(" in {0:.3f} s".format(time))
         except Exception as e:
-            print("query failed: {}".format(query), file=sys.stderr)
+            print("Query failed: {}".format(query), file=sys.stderr)
             print(e, file=sys.stderr)
-    with open(os.path.join("results", "{}.json".format(outname)), 'w') as file:
+    with open(outname, "w") as file:
          json.dump(results, file)
-    with open(os.path.join("results", "{}.json".format("time_" + outname)), 'w') as file:
+    with open(outname + "_times", "w") as file:
          json.dump(qtimes, file)
+
 
 def get_relevant_sizes(tasks):
     relevant_sizes = {}
@@ -63,6 +69,7 @@ def get_queries():
     relevant_sizes = get_relevant_sizes(tasks)
     
     all_queries = minidom.parse(QUERIES_XML).getElementsByTagName("task")
+
     queries = []
     for i, query in enumerate(all_queries):
         qid, qtext = get_query_info(query)
@@ -70,18 +77,33 @@ def get_queries():
             queries.append({ "qid": qid, "qtext": qtext, "size": relevant_sizes[qid] })
     return queries
 
+
 def main():
-    host = os.getenv("ELASTIC_HOST")
-    passwd = os.getenv("ELASTIC_PASS")
-    if host is None or passwd is None:
-        print("ELASTIC_HOST or ELASTIC_PASS env vars not set", file=sys.stderr)
-        return
-    es = elasticsearch.Elasticsearch(hosts=[host], http_auth=("elastic", passwd))
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("-i", "--index", type=str, help="Index to search in", default="extracted")
+    parser.add_argument("-o", "--output", type=str, help="Output file name", default="output")
+    parser.add_argument("-m", "--mode", type=str, help="Query mode", default="basic")
+
+    args = parser.parse_args()
+
+    es = elasticsearch.Elasticsearch(hosts=[ELASTIC_HOST], http_auth=(ELASTIC_USER, ELASTIC_PWD))
     print("Elasticsearch loaded")
+    
     queries = get_queries()
     print("{} queries loaded".format(len(queries)))
-    run_search(es, queries, es_search_basic, "basic")
-    run_search(es, queries, es_search_rprecision, "rprecision")
+    
+    if args.mode == "basic":
+        search_mode = es_search_basic
+    elif args.mode == "rprecision":
+        search_mode = es_search_rprecision
+    else:
+        print("No such mode {}".format(args.mode), file=sys.stderr)
+        return
+    
+    run_search(es, queries, search=search_mode, outname=args.output, index=args.index)
+    
     
 if __name__ == "__main__":
     main()
