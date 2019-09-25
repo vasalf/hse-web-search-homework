@@ -9,7 +9,7 @@ def main():
     parser.add_argument('-i', "--input", type=str, help="XML to convert reuests",
                         default="web2008_adhoc.xml")
     parser.add_argument('-m', "--mode", type=str, help="How to convert requests",
-                        default="lemmas")
+                        default="stemmas")
 
     args = parser.parse_args()
     text = ""
@@ -25,7 +25,7 @@ def main():
 
     dom = minidom.parseString(text)
     for token in dom.getElementsByTagName("task"):
-        token.firstChild.firstChild.replaceWholeText(PipedInput(token.firstChild.firstChild.nodeValue, None, None).get_text())
+        token.firstChild.firstChild.replaceWholeText(formatter.accept(PipedInput(token.firstChild.firstChild.nodeValue, None, None)).get_text())
 
     with open("output_{}.xml".format(args.mode), 'w', encoding="utf-8") as file:
         file.write(dom.toxml())
