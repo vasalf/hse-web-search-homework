@@ -84,7 +84,7 @@ def main():
 
     parser.add_argument("-i", "--index", type=str, help="Index to search in", default="extracted")
     parser.add_argument("-o", "--outdir", type=str, help="Output directory name", default="results")
-    parser.add_argument("-m", "--mode", type=str, help="Query mode", default="top20")
+    parser.add_argument("-m", "--mode", type=str, help="Query mode", default="full")
 
     args = parser.parse_args()
 
