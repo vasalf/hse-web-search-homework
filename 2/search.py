@@ -12,7 +12,7 @@ import xml.dom.minidom as minidom
 import sys
 import argparse
 
-QUERIES_XML = "web2008_adhoc.xml"
+QUERIES_XML = "output_lemmas.xml" #"web2008_adhoc.xml"
 RELEVANT_TABLE = "or_relevant-minus_table.xml"
 ELASTIC_HOST, ELASTIC_USER, ELASTIC_PWD = open("credentials.txt", "r").read().split()
 
@@ -26,7 +26,10 @@ def es_search_rprecision(es, query, index):
     
 def get_query_info(query):
     qid = query.getAttribute("id")
-    qtext = query.getElementsByTagName("querytext")[0].firstChild.data
+    fc = query.getElementsByTagName("querytext")[0].firstChild
+    if fc is None:
+        return None, None
+    qtext = fc.data
     return qid, qtext
 
 
@@ -73,6 +76,9 @@ def get_queries():
     queries = []
     for i, query in enumerate(all_queries):
         qid, qtext = get_query_info(query)
+        if qid is None:
+            continue
+            
         if qid in relevant_sizes:
             queries.append({ "qid": qid, "qtext": qtext, "size": relevant_sizes[qid] })
     return queries
