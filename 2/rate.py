@@ -30,7 +30,8 @@ def map_at_k(expected, actual_raw, k):
     
     p = 0
     n = 0
-    for i in range(1, k):
+    to = min(k, len(actual_raw))
+    for i in range(1, to):
         if (actual_raw[i - 1]["id"] in expected):
             p_i, _ = precision_recall(expected, actual_raw[:i])
             p += p_i
