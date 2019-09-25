@@ -8,18 +8,17 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', "--input", type=str, help="Directory to read extracted documents from",
+    parser.add_argument('-i', "--input", type=str, help="File to read metrics from",
                         default="../results/metrics")
     parser.add_argument('-m', "--metric", type=str, help="Metric to build graphic for",
-                        default="rprecision")
+                        default="r20")
 
     args = parser.parse_args()
 
     metric = args.metric
 
     fig = go.Figure()
-    x = [i / 10.0 for i in range(11)]
-    y = [0 for _ in range(11)]
+    x = []
     sum = 0.0
     cnt = 0.0
     with open(args.input, 'r') as f:
@@ -27,10 +26,10 @@ def main():
         for stats in statsj.values():
             cnt += 1
             sum += stats[metric]
-            y[int(stats[metric] * 10)] += 1
+            x.append(stats[metric])
 
-    fig.add_trace(go.Scatter(
-        x=x, y=y,
+    fig.add_trace(go.Histogram(
+        x=x,
         name='log frequency',
     ))
     fig.update_layout(
