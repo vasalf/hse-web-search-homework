@@ -29,10 +29,13 @@ def map_at_k(expected, actual_raw, k):
         return 0
     
     p = 0
+    n = 0
     for i in range(1, k):
-        p_i, _ = precision_recall(expected, actual_raw[:i])
-        p += p_i
-    return p / k
+        if (actual_raw[i - 1]["id"] in expected):
+            p_i, _ = precision_recall(expected, actual_raw[:i])
+            p += p_i
+            n += 1
+    return p / n
 
 def precision_recall(expected, actual_raw):
     actual = set([doc["id"] for doc in actual_raw])
