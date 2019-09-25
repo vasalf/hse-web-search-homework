@@ -9,8 +9,8 @@ import os
 import os.path
 import timeit
 import xml.dom.minidom as minidom
+import argparse
 
-DOC_DIR = "extracted"
 DOC_RE = re.compile("(\d+).txt")
 INDEX_BODY = {
     "mappings": {
@@ -43,7 +43,7 @@ class ParsedDocument(Document):
         self.title = metaj["title"]
         self.url = metaj["url"]
         self.id = int(fn)
-        self.index = "extracted"
+        self.index = INDEX_NAME
 
 
 def genSelfExtractedActions():
@@ -80,13 +80,28 @@ def indexSize(es, index):
 
 
 def main():
-    es = elasticsearch.Elasticsearch(hosts=[ELASTIC_HOST],
-                                     http_auth=(ELASTIC_USER, ELASTIC_PWD))
+    global INDEX_NAME, DOC_DIR
 
-    es.indices.create(index="extracted", body=INDEX_BODY, ignore=400)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--doc-dir", type=str, default="extracted")
+    parser.add_argument("-i", "--index-name", type=str, default="extracted")
+    parser.add_argument("--local", action="store_true")
+    args = parser.parse_args()
+
+    DOC_DIR = args.doc_dir
+    INDEX_NAME = args.index_name
+
+    if args.local:
+        es = elasticsearch.Elasticsearch()
+    else:
+        es = elasticsearch.Elasticsearch(hosts=[ELASTIC_HOST],
+                                         http_auth=(ELASTIC_USER, ELASTIC_PWD))
+
+    es.indices.create(index=INDEX_NAME, body=INDEX_BODY, ignore=400)
 
     indexExtracted(es)
-    print("Size of index of extracted documents: {} bytes".format(indexSize(es, "extracted")))
+    print("Size of index of extracted documents: {} bytes".format(indexSize(es, INDEX_NAME)))
+
 
 
 if __name__ == "__main__":
