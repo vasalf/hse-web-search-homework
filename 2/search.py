@@ -12,7 +12,7 @@ import xml.dom.minidom as minidom
 import sys
 import argparse
 
-QUERIES_XML = "output_lemmas.xml" #"web2008_adhoc.xml"
+QUERIES_XML = "web2008_adhoc.xml" #"output_stemmas.xml" #"web2008_adhoc.xml"
 RELEVANT_TABLE = "or_relevant-minus_table.xml"
 ELASTIC_HOST, ELASTIC_USER, ELASTIC_PWD = open("credentials.txt", "r").read().split()
 
@@ -91,10 +91,14 @@ def main():
     parser.add_argument("-i", "--index", type=str, help="Index to search in", default="extracted")
     parser.add_argument("-o", "--outdir", type=str, help="Output directory name", default="results")
     parser.add_argument("-m", "--mode", type=str, help="Query mode", default="full")
+    parser.add_argument("--local", action="store_true", help="Use local elasticsearch")
 
     args = parser.parse_args()
 
-    es = elasticsearch.Elasticsearch(hosts=[ELASTIC_HOST], http_auth=(ELASTIC_USER, ELASTIC_PWD))
+    if args.local:
+        es = elasticsearch.Elasticsearch()
+    else:
+        es = elasticsearch.Elasticsearch(hosts=[ELASTIC_HOST], http_auth=(ELASTIC_USER, ELASTIC_PWD))
     print("Elasticsearch loaded")
     
     queries = get_queries()

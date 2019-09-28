@@ -130,7 +130,13 @@ dmypy.json
 2/byweb_for_course/*
 1/extracted/*
 2/extracted/*
+2/stemmed
+2/headered
+2/lemmatized
+2/results
 2/credentials.txt
+2/output_*
+2/or_relevant-minus_table.xml
 byweb_for_course.zip
 byweb_for_course/*
 extracted/*

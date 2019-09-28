@@ -12,6 +12,7 @@ import xml.dom.minidom as minidom
 import argparse
 
 DOC_RE = re.compile("(\d+).txt")
+META_RE = re.compile("(\d+).json")
 INDEX_BODY = {
     "mappings": {
         "properties": {
@@ -47,12 +48,19 @@ class ParsedDocument(Document):
 
 
 def genSelfExtractedActions():
-    for fn in os.listdir(DOC_DIR):
+    listdir = os.listdir(DOC_DIR)
+    print(len(listdir))
+    ok = 0
+    for fn in listdir:
         match = DOC_RE.match(fn)
         if match:
             doc_fn = os.path.join(DOC_DIR, fn)
             meta_fn = os.path.join(DOC_DIR, "{}.json".format(match.group(1)))
+            ok += 1
             yield ParsedDocument(match.group(1), doc_fn, meta_fn).indexAction()
+        elif not META_RE.match(fn):
+            print(fn)
+    print(ok)
 
 
 
@@ -72,7 +80,7 @@ class MeasuredAction:
 
 @MeasuredAction("Indexing of extracted documents")
 def indexExtracted(es):
-    esh.bulk(es, genSelfExtractedActions())
+    print(esh.bulk(es, genSelfExtractedActions()))
 
 
 def indexSize(es, index):
