@@ -107,7 +107,7 @@ def main():
     if args.mode == "top20" or args.mode == "full":
         run_search(es, queries, search=es_search_basic, outpath=os.path.join(args.outdir, "top20"), index=args.index)
     if args.mode == "rprecision" or args.mode == "full":
-        run_search(es, queries, search=es_search_basic, outpath=os.path.join(args.outdir, "rprecision"), index=args.index)
+        run_search(es, queries, search=es_search_rprecision, outpath=os.path.join(args.outdir, "rprecision"), index=args.index)
     
     
 if __name__ == "__main__":
