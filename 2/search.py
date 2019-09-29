@@ -24,6 +24,40 @@ def es_search_rprecision(es, query, index):
     return es.search(size=query["size"], index=index, body={"_source":["_score", "_id"], "query": {"match": {"body": query["qtext"]}}})
     
     
+def pagerank_query(qtext):
+    return {
+        "_source": ["_score", "_id"],
+        "query": {
+            "bool": {
+                "should": [
+                    {
+                        "match": {
+                            "body": {
+                                "query": qtext,
+                                "boost": 0.8
+                            }
+                        }
+                    },
+                    {
+                        "rank_feature": {
+                            "field": "pagerank",
+                            "boost": 0.2
+                        }
+                    }
+                ]
+            }
+        }
+    }
+    
+    
+def es_pagerank_basic(es, query, index):
+    return es.search(size=20, index=index, body=pagerank_query(query["qtext"]))
+    
+    
+def es_pagerank_rprecision(es, query, index):
+    return es.search(size=query["size"], index=index, body=pagerank_query(query["qtext"]))
+    
+    
 def get_query_info(query):
     qid = query.getAttribute("id")
     fc = query.getElementsByTagName("querytext")[0].firstChild
@@ -81,7 +115,7 @@ def get_queries():
             
         if qid in relevant_sizes:
             queries.append({ "qid": qid, "qtext": qtext, "size": relevant_sizes[qid] })
-    return queries
+    return queries[:1]
 
 
 def main():
@@ -107,7 +141,11 @@ def main():
     if args.mode == "top20" or args.mode == "full":
         run_search(es, queries, search=es_search_basic, outpath=os.path.join(args.outdir, "top20"), index=args.index)
     if args.mode == "rprecision" or args.mode == "full":
-        run_search(es, queries, search=es_search_rprecision, outpath=os.path.join(args.outdir, "rprecision"), index=args.index)
+        run_search(es, queries, search=es_search_rprecision, outpath=os.path.join(args.outdir, "rprecision"), index=args.index) 
+    if args.mode == "pr_rprecision" or args.mode == "pr_full":
+        run_search(es, queries, search=es_pagerank_basic, outpath=os.path.join(args.outdir, "pr_top20"), index=args.index) 
+    if args.mode == "pr_rprecision" or args.mode == "pr_full":
+        run_search(es, queries, search=es_pagerank_rprecision, outpath=os.path.join(args.outdir, "pr_rprecision"), index=args.index)
     
     
 if __name__ == "__main__":
