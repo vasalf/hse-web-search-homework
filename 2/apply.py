@@ -9,6 +9,7 @@ import time
 from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage, PipelineDumpingStage
 from pipeline.text_processor_stage import TextLemmatizerStage, TextStemmerStage, TextWithHeaderStage
 from pipeline.json_unpacker_stage import JsonUnpackerStage
+from pipeline.pagerank import PageRankStage
 
 class StringHolder:
     def __init__(self):

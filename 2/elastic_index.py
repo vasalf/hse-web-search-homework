@@ -17,7 +17,8 @@ INDEX_BODY = {
     "mappings": {
         "properties": {
             "title": { "type": "text" },
-            "body": { "type": "text" }
+            "body": { "type": "text" },
+            "pagerank": { "type": "rank_feature" }
         }
     }
 }
@@ -31,7 +32,8 @@ class Document:
             "_id": self.id,
             "url": self.url,
             "title": self.title,
-            "body": self.content
+            "body": self.content,
+            "pagerank": self.pagerank
         }
 
 
@@ -45,6 +47,9 @@ class ParsedDocument(Document):
         self.url = metaj["url"]
         self.id = int(fn)
         self.index = INDEX_NAME
+        self.pagerank = PAGERANK.get(self.url, 0)
+        print(self.pagerank)
+            
 
 
 def genSelfExtractedActions():
@@ -88,16 +93,19 @@ def indexSize(es, index):
 
 
 def main():
-    global INDEX_NAME, DOC_DIR
+    global INDEX_NAME, DOC_DIR, PAGERANK
 
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", "--doc-dir", type=str, default="extracted")
     parser.add_argument("-i", "--index-name", type=str, default="extracted")
+    parser.add_argument("-p", "--pagerank", type=str, default="results/pagerank.json")
     parser.add_argument("--local", action="store_true")
     args = parser.parse_args()
 
     DOC_DIR = args.doc_dir
     INDEX_NAME = args.index_name
+    with open(args.pagerank, 'r') as file:
+        PAGERANK = json.load(file)
 
     if args.local:
         es = elasticsearch.Elasticsearch()

@@ -65,7 +65,7 @@ class PageRankStage(PipelineStage):
 
         pr = nx.pagerank(result)
         pr_json = {}
-        print(pr)
+
         for k, v in pr.items():
             pr_json[self.inv_indexes[k]] = v
         with open(os.path.join("results", "pagerank.json"), 'w') as file:
