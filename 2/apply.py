@@ -41,6 +41,7 @@ def main():
         PipelineDumpingStage(TextLemmatizerStage(), lemm_holder),
         PipelineDumpingStage(TextStemmerStage(), stem_holder),
         JsonUnpackerStage(),
+        PipelineImmutableStage(PageRankStage()),
         PipelineDumpingStage(TextWithHeaderStage(), header_holder),
     ]
     # Register your pipeline stage here.
