@@ -1,3 +1,29 @@
 \section{PageRank}
 
-Тут Дима.
+\subsection{Вычисление}
+
+Для расчёта PageRank был создан отдельный этап обработки в пайплайне, который:
+\begin{enumerate}
+	\item Накапливает граф гиперссылок в объект \texttt{networkx.DiGraph};
+	\item Выделяет подграф из URL документов коллекции (исключая внешние ссылки);
+	\item Запускает на нём алгоритм PageRank с вероятностью телепортации 0.15;
+	\item Сохраняет результат в JSON.
+\end{enumerate}
+
+После этого в ElasticSearch при создании индекса для каждого документа запоминается его PageRank типа \texttt{rank\_feature}.
+
+ При поиске релевантность документа вычисляется по формуле 
+ $$ relevance = (1 - w_{pr}) \cdot BM25 + w_{pr} PageRank$$
+ где $w_{pr} = 0.2$.
+ 
+ \subsection{Результаты оценок}
+ \begin{center}
+ 	\begin{tabular}{l|cccc}
+ 		& p@20 & r@20 & MAP@20 & R-Precision\\
+ 		\hline
+ 		Исходные & 0.31 & 0.19 & 0.45 & 0.25\\
+ 		PageRank & {\bf TODO} & {\bf TODO} & {\bf TODO} & {\bf TODO}\\
+ 		\end{tabular}
+\end{center}
+
+Из результатов следует, что \textbf{TODO}
