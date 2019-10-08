@@ -12,6 +12,7 @@ from pipeline.length_counter_stage import LengthCounterStage
 from pipeline.pagerank import PageRankStage
 from pipeline.field_match_stage import FieldMatchStage
 from pipeline.init_features_stage import InitFeaturesStage
+from pipeline.query_length_stage import QueryLengthStage
 from queries import *
 from utils import *
 
@@ -48,6 +49,7 @@ def main():
         PipelineImmutableStage(LengthCounterStage()),
         PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
         PipelineImmutableStage(CreateFeatureDumper(PageRankStage())),
+        PipelineImmutableStage(CreateFeatureDumper(QueryLengthStage(queries)))
     ]
     # Register your pipeline stage here.
 
