@@ -13,6 +13,7 @@ from pipeline.pagerank import PageRankStage
 from pipeline.field_match_stage import FieldMatchStage
 from pipeline.init_features_stage import InitFeaturesStage
 from pipeline.query_length_stage import QueryLengthStage
+from pipeline.text_processor_stage import TextProcessorStage, StopwordsFilter
 from queries import *
 from utils import *
 
@@ -40,11 +41,12 @@ def main():
     features = {}
     query_features = {}
     doc_features = {}
-    init_query_features(queries, query_features)
     CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features, query_features, doc_features)
 
     stages = [
         JsonUnpackerStage(),
+        TextProcessorStage(),
+        StopwordsFilter(),
         PipelineImmutableStage(CreateFeatureDumper(InitFeaturesStage(queries))),
         PipelineImmutableStage(LengthCounterStage()),
         PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
