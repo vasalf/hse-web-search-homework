@@ -19,8 +19,3 @@ def is_belarusian(word):
 
 def is_english(word):
     return english_re.search(word) is not None
-
-
-def init_query_features(queries, query_features):
-    for query in queries:
-        query_features[query.qid] = {}

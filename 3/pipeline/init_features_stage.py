@@ -14,4 +14,5 @@ class InitFeaturesStage(PipelineStage):
             self.features[pair_key] = {}
 
     def dump(self):
-        pass
+        for query in self.queries:
+            self.query_features[query.qid] = {}
