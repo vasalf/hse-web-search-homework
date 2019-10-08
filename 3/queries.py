@@ -62,7 +62,7 @@ def load_queries(queries_path, relevant_docs, irrelevant_docs):
     queries = {}
     for query in all_queries:
         qid, text = get_query_info(query)
-        #text = StopwordsFilter.filter_stopwords(TextProcessorStage.lemmatize(text))
+        text = StopwordsFilter.filter_stopwords(TextProcessorStage.lemmatize(text))
         if qid is not None and text and \
         (qid in relevant_docs or qid in irrelevant_docs):
             queries[qid] = text

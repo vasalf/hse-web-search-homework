@@ -45,8 +45,8 @@ def main():
 
     stages = [
         JsonUnpackerStage(),
-        #TextProcessorStage(),
-        #StopwordsFilter(),
+        TextProcessorStage(),
+        StopwordsFilter(),
         PipelineImmutableStage(CreateFeatureDumper(InitFeaturesStage(queries, docs_to_queries))),
         PipelineImmutableStage(CreateFeatureDumper(LengthCounterStage())),
         PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries, docs_to_queries))),
