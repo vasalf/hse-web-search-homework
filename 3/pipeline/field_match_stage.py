@@ -17,12 +17,9 @@ class FieldMatchStage(PipelineStage):
             pair_key = "{}:{}".format(query.qid, doc_id)
             features = self.features[pair_key]
 
-            features["match_body"] = count_match(query.text, body)
-            features["match_title"] = count_match(query.text, title)
+            features["match_body"] = fraction_of_words(query.text, body)
+            features["match_title"] = fraction_of_words(query.text, title)
+            features["window"] = shortest_window(query.text, body)
 
     def dump(self):
         pass
-
-
-def count_match(s1, s2):
-    return 1.0
