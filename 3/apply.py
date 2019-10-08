@@ -99,7 +99,7 @@ def main():
             fs = {}
             fs.update(df)
             fs.update(qf)
-            pair = f"{q}:{doc}"
+            pair = "{}:{}".format(q, doc)
             fs.update(features[pair])
             fs["target"] = int(doc in relevant[q])
 
