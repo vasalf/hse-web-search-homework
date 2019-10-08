@@ -10,6 +10,7 @@ from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage,
 from pipeline.json_unpacker_stage import JsonUnpackerStage
 from pipeline.length_counter_stage import LengthCounterStage
 from pipeline.pagerank import PageRankStage
+from queries import *
 
 
 def main():
@@ -22,16 +23,24 @@ def main():
                         default="extracted")
     parser.add_argument('-e', '--encoding', type=str, help="Documents encoding", default='utf8')
 
+    parser.add_argument('-r', '--relevant', type=str, help="Relevance table for queries path",
+                        default="or_relevant-minus_table.xml")
+    parser.add_argument('-q', '--queries', type=str, help="Queries path",
+                        default="web2008_adhoc.xml")
+
     args = parser.parse_args()
 
-    print("Ready to process {} files in {} directory.".format(args.documents, args.input))
-
     stages = [
-        JsonUnpackerStage(),
-        PipelineImmutableStage(LengthCounterStage()),
-        PipelineImmutableStage(PageRankStage()),
+        #JsonUnpackerStage(),
+        #PipelineImmutableStage(LengthCounterStage()),
+        #PipelineImmutableStage(PageRankStage()),
     ]
     # Register your pipeline stage here.
+
+    relevant = load_relevant_docs(args.relevant)
+    queries = load_queries(args.queries, relevant)
+
+    print("Ready to process {} files in {} directory.".format(args.documents, args.input))
 
     try:
         os.makedirs("logs")
