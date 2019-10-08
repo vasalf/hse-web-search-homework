@@ -43,19 +43,7 @@ class PipelineImmutableStage(PipelineStage):
         return self.stage.dump()
 
 
-class PipelineDumpingStage(PipelineImmutableStage):
-    def __init__(self, stage: PipelineStage, name_generator):
+class PipelineFeaturesDumper(PipelineImmutableStage):
+    def __init__(self, stage: PipelineStage, features_dump):
         super().__init__(stage)
-        self.name_generator = name_generator
-
-    def accept(self, consumer_input: PipedInput):
-        result = self.stage.accept(consumer_input)
-        name = self.name_generator()
-        with open(name + ".txt", 'w') as file:
-            file.write(result.get_text())
-        with open(name + ".json", 'w') as file:
-            file.write(result.get_meta())
-        return consumer_input
-
-    def dump(self):
-        return self.stage.dump()
+        stage.features = features_dump
