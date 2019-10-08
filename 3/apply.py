@@ -41,7 +41,6 @@ def main():
     features = {}
     query_features = {}
     doc_features = {}
-    init_query_features(queries, query_features)
     CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features, query_features, doc_features)
 
     stages = [
