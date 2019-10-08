@@ -71,4 +71,4 @@ class PageRankStage(PipelineStage):
         pr = nx.pagerank(result)
 
         for k, v in pr.items():
-            self.features[self.doc_ids[k]] = v
+            self.doc_features[self.doc_ids[k]]["pagerank"] = v

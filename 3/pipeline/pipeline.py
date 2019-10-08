@@ -44,6 +44,8 @@ class PipelineImmutableStage(PipelineStage):
 
 
 class PipelineFeaturesDumper(PipelineImmutableStage):
-    def __init__(self, stage: PipelineStage, features_dump):
+    def __init__(self, stage: PipelineStage, features_dump, query_features_dump, doc_features_dump):
         super().__init__(stage)
         stage.features = features_dump
+        stage.query_features = query_features_dump
+        stage.doc_features = doc_features_dump

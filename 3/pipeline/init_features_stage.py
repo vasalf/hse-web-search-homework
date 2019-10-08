@@ -8,6 +8,7 @@ class InitFeaturesStage(PipelineStage):
     def accept(self, consumer_input: PipedInput):
         doc_id = consumer_input.get_doc_id()
 
+        self.doc_features[doc_id] = {}
         for query in self.queries:
             pair_key = "{}:{}".format(query.qid, doc_id)
             self.features[pair_key] = {}

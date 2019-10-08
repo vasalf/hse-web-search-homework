@@ -13,6 +13,7 @@ from pipeline.pagerank import PageRankStage
 from pipeline.field_match_stage import FieldMatchStage
 from pipeline.init_features_stage import InitFeaturesStage
 from queries import *
+from utils import *
 
 
 def main():
@@ -32,11 +33,14 @@ def main():
 
     args = parser.parse_args()
 
-    features = {}
-    CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features)
-
     relevant = load_relevant_docs(args.relevant)
     queries = load_queries(args.queries, relevant)
+
+    features = {}
+    query_features = {}
+    doc_features = {}
+    init_query_features(queries, query_features)
+    CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features, query_features, doc_features)
 
     stages = [
         JsonUnpackerStage(),
