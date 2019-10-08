@@ -6,7 +6,7 @@ import os.path
 import sys
 import time
 
-from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage, PipelineDumpingStage
+from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage, PipelineFeaturesDumper
 from pipeline.json_unpacker_stage import JsonUnpackerStage
 from pipeline.length_counter_stage import LengthCounterStage
 from pipeline.pagerank import PageRankStage
@@ -29,6 +29,10 @@ def main():
                         default="web2008_adhoc.xml")
 
     args = parser.parse_args()
+
+    features = {}
+    # ДИМА, ИСПОЛЬЗУЙ ЭТО V
+    CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features)
 
     stages = [
         #JsonUnpackerStage(),
