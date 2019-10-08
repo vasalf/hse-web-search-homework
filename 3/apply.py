@@ -14,12 +14,12 @@ from pipeline.field_match_stage import FieldMatchStage
 from pipeline.init_features_stage import InitFeaturesStage
 from pipeline.query_length_stage import QueryLengthStage
 from pipeline.text_processor_stage import TextProcessorStage, StopwordsFilter
+from pipeline.bm25 import BM25Stage
 from queries import *
 from utils import *
 
 
 def main():
-    timestamp = time.time()
 
     parser = argparse.ArgumentParser()
 
@@ -51,7 +51,8 @@ def main():
         PipelineImmutableStage(LengthCounterStage()),
         PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
         PipelineImmutableStage(CreateFeatureDumper(PageRankStage())),
-        PipelineImmutableStage(CreateFeatureDumper(QueryLengthStage(queries)))
+        PipelineImmutableStage(CreateFeatureDumper(QueryLengthStage(queries))),
+        PipelineImmutableStage(CreateFeatureDumper(BM25Stage(queries))),
     ]
     # Register your pipeline stage here.
 
@@ -65,6 +66,11 @@ def main():
         if e.errno != errno.EEXIST:
             raise
 
+    run_pipeline(args, stages)
+
+
+def run_pipeline(args, stages):
+    timestamp = time.time()
     with open(os.path.join('logs', '{}.txt'.format(timestamp)), 'w') as logs:
         sys.stdout = logs
 
