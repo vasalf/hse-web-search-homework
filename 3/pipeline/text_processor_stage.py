@@ -49,3 +49,7 @@ class StopwordsFilter(PipelineStage):
         new_meta = copy(consumer_input.get_meta())
         new_meta["title"] = self.filter_stopwords(new_meta["title"])
         return consumer_input.new(text=self.filter_stopwords(consumer_input.get_text()), meta=new_meta)
+
+    def dump(self):
+        pass
+
