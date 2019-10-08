@@ -3,12 +3,14 @@ from math import log2
 
 
 class BM25Stage(PipelineStage):
-    def __init__(self, queries):
+    def __init__(self, queries, docs_to_queries):
         self.df = {}
         self.tf = {}
         self.queries = queries
-        for query in queries:
-            for word in query.text.split():
+        self.docs_to_queries = docs_to_queries
+
+        for text in queries.values():
+            for word in text.split():
                 self.df[word] = 0
                 self.tf[word] = {}
         self.doc_lengths = {}
@@ -41,11 +43,11 @@ class BM25Stage(PipelineStage):
                 idf[word] = log2(doc_n / df)
 
         for doc_id, doc_len in self.doc_lengths.items():
-            for query in self.queries:
+            for qid in self.docs_to_queries.get(doc_id, []):
                 score = 0
-                for word in query.text.split():
+                for word in self.queries[qid].split():
                     tf = self.tf[word].get(doc_id, 0)
                     score += idf[word] * \
                              (tf * (K1 + 1)) / \
                              (tf + K1 * (1 - B + B * doc_len / avgdl))
-                self.features["{}:{}".format(query.qid, doc_id)]["BM25"] = score
+                self.features["{}:{}".format(qid, doc_id)]["BM25"] = score

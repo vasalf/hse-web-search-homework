@@ -19,16 +19,33 @@ class Query:
         return self.text
 
 
+def update_docs_to_queries(docs_to_queries, qid, doc_id):
+    if doc_id not in docs_to_queries:
+        docs_to_queries[doc_id] = []
+    docs_to_queries[doc_id].append(qid)
+
+
 def load_relevant_docs(relevant_path):
     tasks = minidom.parse(relevant_path).getElementsByTagName("task")
 
     relevant_docs = {}
+    irrelevant_docs = {}
+    docs_to_queries = {}
+
     for task in tasks:
         qid = task.getAttribute("id")
-        relevant_docs[qid] = [doc.getAttribute("id")
-                              for doc in task.getElementsByTagName("document")
-                              if doc.getAttribute("relevance") == "vital"]
-    return relevant_docs
+        relevant_docs[qid] = []
+        irrelevant_docs[qid] = []
+        for doc in task.getElementsByTagName("document"):
+            doc_id = doc.getAttribute("id")
+            if doc.getAttribute("relevance") == "vital":
+                relevant_docs[qid].append(doc_id)
+                update_docs_to_queries(docs_to_queries, qid, doc_id)
+            if doc.getAttribute("relevance") == "notrelevant":
+                irrelevant_docs[qid].append(doc_id)
+                update_docs_to_queries(docs_to_queries, qid, doc_id)
+
+    return relevant_docs, irrelevant_docs, docs_to_queries
 
 
 def get_query_info(query):
@@ -40,13 +57,14 @@ def get_query_info(query):
     return qid, text
 
 
-def load_queries(queries_path, relevant_docs):
+def load_queries(queries_path, relevant_docs, irrelevant_docs):
     all_queries = minidom.parse(queries_path).getElementsByTagName("task")
-    queries = []
+    queries = {}
     for query in all_queries:
         qid, text = get_query_info(query)
-        text = StopwordsFilter.filter_stopwords(TextProcessorStage.lemmatize(text))
-        if qid is not None and text and qid in relevant_docs:
-            queries.append(Query(qid, text))
+        #text = StopwordsFilter.filter_stopwords(TextProcessorStage.lemmatize(text))
+        if qid is not None and text and \
+        (qid in relevant_docs or qid in irrelevant_docs):
+            queries[qid] = text
 
     return queries

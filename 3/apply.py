@@ -35,8 +35,8 @@ def main():
 
     args = parser.parse_args()
 
-    relevant = load_relevant_docs(args.relevant)
-    queries = load_queries(args.queries, relevant)
+    relevant, irrelevant, docs_to_queries = load_relevant_docs(args.relevant)
+    queries = load_queries(args.queries, relevant, irrelevant)
 
     features = {}
     query_features = {}
@@ -45,14 +45,14 @@ def main():
 
     stages = [
         JsonUnpackerStage(),
-        TextProcessorStage(),
-        StopwordsFilter(),
-        PipelineImmutableStage(CreateFeatureDumper(InitFeaturesStage(queries))),
+        #TextProcessorStage(),
+        #StopwordsFilter(),
+        PipelineImmutableStage(CreateFeatureDumper(InitFeaturesStage(queries, docs_to_queries))),
         PipelineImmutableStage(CreateFeatureDumper(LengthCounterStage())),
-        PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
+        PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries, docs_to_queries))),
         PipelineImmutableStage(CreateFeatureDumper(PageRankStage())),
         PipelineImmutableStage(CreateFeatureDumper(QueryLengthStage(queries))),
-        PipelineImmutableStage(CreateFeatureDumper(BM25Stage(queries))),
+        PipelineImmutableStage(CreateFeatureDumper(BM25Stage(queries, docs_to_queries))),
     ]
     # Register your pipeline stage here.
 
@@ -90,14 +90,17 @@ def main():
                             stage_input = consumer.accept(stage_input)
                 documents_counter += 1
             doc_id += 1
-
         for stage in stages:
             stage.dump()
 
     result = {}
 
-    for doc, df in doc_features.items():
-        for q, qf in query_features.items():
+    for doc, queries in docs_to_queries.items():
+        if doc not in doc_features:
+            continue
+        df = doc_features[doc]
+        for q in queries:
+            qf = query_features[q]
             fs = {}
             fs.update(df)
             fs.update(qf)

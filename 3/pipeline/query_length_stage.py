@@ -9,5 +9,5 @@ class QueryLengthStage(PipelineStage):
         pass
 
     def dump(self):
-        for query in self.queries:
-            self.query_features[query.qid]["query_len"] = len(query.text)
+        for qid, text in self.queries.items():
+            self.query_features[qid]["query_len"] = len(text)
