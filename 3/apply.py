@@ -93,6 +93,25 @@ def main():
         for stage in stages:
             stage.dump()
 
+    result = {}
+
+    for doc, df in doc_features.items():
+        for q, qf in query_features.items():
+            fs = {}
+            fs.update(df)
+            fs.update(qf)
+            pair = f"{q}:{doc}"
+            fs.update(features[pair])
+            fs["target"] = int(doc in relevant[q])
+
+            result[pair] = fs
+
+    with open("dataset", 'w') as file:
+        for pair, fs in result.items():
+            for key, value in fs.items():
+                file.write("{}:{} ".format(key, value))
+            file.write("\n")
+
 
 if __name__ == "__main__":
     main()

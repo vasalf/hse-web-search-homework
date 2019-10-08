@@ -2,6 +2,7 @@ import json
 import os
 import xml.dom.minidom as minidom
 
+from pipeline.text_processor_stage import TextProcessorStage, StopwordsFilter
 
 class Query:
     def __init__(self, qid, text):
@@ -41,11 +42,11 @@ def get_query_info(query):
 
 def load_queries(queries_path, relevant_docs):
     all_queries = minidom.parse(queries_path).getElementsByTagName("task")
-
     queries = []
     for query in all_queries:
         qid, text = get_query_info(query)
-        if qid is not None and qid in relevant_docs:
+        text = StopwordsFilter.filter_stopwords(TextProcessorStage.lemmatize(text))
+        if qid is not None and text and qid in relevant_docs:
             queries.append(Query(qid, text))
 
     return queries
