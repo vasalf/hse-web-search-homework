@@ -10,6 +10,7 @@ from pipeline.pipeline import PipelineStage, PipedInput, PipelineImmutableStage,
 from pipeline.json_unpacker_stage import JsonUnpackerStage
 from pipeline.length_counter_stage import LengthCounterStage
 from pipeline.pagerank import PageRankStage
+from pipeline.field_match_stage import FieldMatchStage
 from queries import *
 
 
@@ -31,18 +32,18 @@ def main():
     args = parser.parse_args()
 
     features = {}
-    # ДИМА, ИСПОЛЬЗУЙ ЭТО V
     CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features)
-
-    stages = [
-        #JsonUnpackerStage(),
-        #PipelineImmutableStage(LengthCounterStage()),
-        #PipelineImmutableStage(PageRankStage()),
-    ]
-    # Register your pipeline stage here.
-
+    
     relevant = load_relevant_docs(args.relevant)
     queries = load_queries(args.queries, relevant)
+
+    stages = [
+        JsonUnpackerStage(),
+        PipelineImmutableStage(LengthCounterStage()),
+        PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
+        PipelineImmutableStage(PageRankStage()),
+    ]
+    # Register your pipeline stage here.
 
     print("Ready to process {} files in {} directory.".format(args.documents, args.input))
 
