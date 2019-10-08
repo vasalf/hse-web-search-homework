@@ -115,7 +115,7 @@ def get_queries():
             
         if qid in relevant_sizes:
             queries.append({ "qid": qid, "qtext": qtext, "size": relevant_sizes[qid] })
-    return queries[:1]
+    return queries
 
 
 def main():

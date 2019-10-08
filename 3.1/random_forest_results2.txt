@@ -1,0 +1,53 @@
+
+[+] General Parameters:
+Training data:	task3_train_norm.txt
+Train-Validation split: 0.8
+Feature vector representation: Dense.
+Ranking method:	Random Forests
+Feature description file:	features.txt
+Train metric:	NDCG@20
+Test metric:	NDCG@20
+Feature normalization: No
+
+[+] Random Forests's Parameters:
+No. of bags: 20
+Sub-sampling: 1.0
+Feature-sampling: 0.3
+No. of trees: 10
+No. of leaves: 10
+No. of threshold candidates: 256
+Learning rate: 0.1
+
+Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]: 0... Reading feature file [task3_train_norm.txt]... [Done.]            
+(7033 ranked lists, 75057 entries read)
+Initializing... [Done]
+------------------------------------
+Training starts...
+------------------------------------
+bag       | NDCG@20-B | NDCG@20-OOB | 
+------------------------------------
+b[1]      | 0.7317    | 
+b[2]      | 0.7372    | 
+b[3]      | 0.7264    | 
+b[4]      | 0.7282    | 
+b[5]      | 0.7244    | 
+b[6]      | 0.7283    | 
+b[7]      | 0.7283    | 
+b[8]      | 0.7337    | 
+b[9]      | 0.728     | 
+b[10]     | 0.7265    | 
+b[11]     | 0.7315    | 
+b[12]     | 0.7329    | 
+b[13]     | 0.7322    | 
+b[14]     | 0.732     | 
+b[15]     | 0.7234    | 
+b[16]     | 0.7353    | 
+b[17]     | 0.7313    | 
+b[18]     | 0.7287    | 
+b[19]     | 0.7281    | 
+b[20]     | 0.7313    | 
+------------------------------------
+Finished sucessfully.
+NDCG@20 on training data: 0.7355
+NDCG@20 on validation data: 0.7334
+------------------------------------

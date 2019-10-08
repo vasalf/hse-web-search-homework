@@ -125,6 +125,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# logs and outputs
+*.txt
+
 1/byweb_for_course.zip
 1/byweb_for_course/*
 2/byweb_for_course/*
@@ -137,13 +140,16 @@ dmypy.json
 2/credentials.txt
 2/output_*
 2/or_relevant-minus_table.xml
+!3.1/*.txt
+3.1/task3_train*
+3.1/imat2009-datasets/*
 byweb_for_course.zip
 byweb_for_course/*
 extracted/*
 
-# logs and outputs
-*.txt
 
 *.aux
 *.log
 *.pdf
+
+*.jar
