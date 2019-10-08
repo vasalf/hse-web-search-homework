@@ -62,3 +62,13 @@ def shortest_window(query, document):
         if nz == len(q_words):
             mn = min(mn, j - i)
     return len(q_words) / (mn - 1)
+
+
+def fraction_of_words(query, document):
+    q_words = set(query.split())
+    present = set()
+    for w in document.split():
+        if w not in q_words:
+            continue
+        present.add(w)
+    return len(present) / len(q_words)
