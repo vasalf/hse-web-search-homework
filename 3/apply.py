@@ -11,6 +11,7 @@ from pipeline.json_unpacker_stage import JsonUnpackerStage
 from pipeline.length_counter_stage import LengthCounterStage
 from pipeline.pagerank import PageRankStage
 from pipeline.field_match_stage import FieldMatchStage
+from pipeline.init_features_stage import InitFeaturesStage
 from queries import *
 
 
@@ -33,15 +34,16 @@ def main():
 
     features = {}
     CreateFeatureDumper = lambda stage: PipelineFeaturesDumper(stage, features)
-    
+
     relevant = load_relevant_docs(args.relevant)
     queries = load_queries(args.queries, relevant)
 
     stages = [
         JsonUnpackerStage(),
+        PipelineImmutableStage(CreateFeatureDumper(InitFeaturesStage(queries))),
         PipelineImmutableStage(LengthCounterStage()),
         PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
-        PipelineImmutableStage(PageRankStage()),
+        PipelineImmutableStage(CreateFeatureDumper(PageRankStage())),
     ]
     # Register your pipeline stage here.
 

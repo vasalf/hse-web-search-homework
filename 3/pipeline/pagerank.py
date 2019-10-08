@@ -69,11 +69,6 @@ class PageRankStage(PipelineStage):
         result = subgraph(self.graph, self.bases)
 
         pr = nx.pagerank(result)
-        pr_json = {}
 
         for k, v in pr.items():
-            pr_json[self.doc_ids[k]] = v
-        with open(os.path.join("results", "pagerank.json"), 'w') as file:
-            json.dump(pr_json, file)
-            
-        print("Pagerank saved")
+            self.features[self.doc_ids[k]] = v
