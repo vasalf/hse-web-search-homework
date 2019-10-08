@@ -48,7 +48,7 @@ def main():
         TextProcessorStage(),
         StopwordsFilter(),
         PipelineImmutableStage(CreateFeatureDumper(InitFeaturesStage(queries))),
-        PipelineImmutableStage(LengthCounterStage()),
+        PipelineImmutableStage(CreateFeatureDumper(LengthCounterStage())),
         PipelineImmutableStage(CreateFeatureDumper(FieldMatchStage(queries))),
         PipelineImmutableStage(CreateFeatureDumper(PageRankStage())),
         PipelineImmutableStage(CreateFeatureDumper(QueryLengthStage(queries))),
@@ -66,10 +66,6 @@ def main():
         if e.errno != errno.EEXIST:
             raise
 
-    run_pipeline(args, stages)
-
-
-def run_pipeline(args, stages):
     timestamp = time.time()
     with open(os.path.join('logs', '{}.txt'.format(timestamp)), 'w') as logs:
         sys.stdout = logs

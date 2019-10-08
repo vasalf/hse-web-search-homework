@@ -44,7 +44,7 @@ class BM25Stage(PipelineStage):
             for query in self.queries:
                 score = 0
                 for word in query.text.split():
-                    tf = self.tf[word].get(doc_id, default=0)
+                    tf = self.tf[word].get(doc_id, 0)
                     score += idf[word] * \
                              (tf * (K1 + 1)) / \
                              (tf + K1 * (1 - B + B * doc_len / avgdl))

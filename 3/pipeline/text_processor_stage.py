@@ -13,6 +13,7 @@ mystem = Mystem()
 russian_stopwords = stopwords.words("russian")
 english_stopwords = stopwords.words("english")
 
+
 class TextProcessorStage(PipelineStage):
     @staticmethod
     def lemmatize(text):
@@ -41,7 +42,7 @@ class StopwordsFilter(PipelineStage):
         for word in text:
             if is_russian(word) and word not in russian_stopwords \
                     or is_english(word) and word not in english_stopwords:
-                result_text.append(word)
+                result.append(word)
         return " ".join(result)
 
     def accept(self, consumer_input: PipedInput):
