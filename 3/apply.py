@@ -98,7 +98,7 @@ def main():
 
     fid = {
         "target" : "",
-        "qid" : "quid:",
+        "qid" : "qid:",
         "text_len" : "1:",
         "url_len" : "2:",
         "pagerank": "3:",
@@ -110,6 +110,9 @@ def main():
         "BM25": "9:",
     }
 
+    new_qid = 1
+    qids = {}
+
     for doc, queries in docs_to_queries.items():
         if doc not in doc_features:
             continue
@@ -118,7 +121,10 @@ def main():
             print("Recording features for pair doc,qid: ", doc, q, file=sys.stderr)
 
             qf = query_features[q]
-            fs = {"target": int(doc in relevant[q]), "qid": q}
+            if q not in qids:
+                qids[q] = new_qid
+                new_qid += 1
+            fs = {"target": int(doc in relevant[q]), "qid": qids[q]}
             fs.update(df)
             fs.update(qf)
             pair = "{}:{}".format(q, doc)
