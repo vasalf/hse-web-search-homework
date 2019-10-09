@@ -17,11 +17,11 @@ english_stopwords = stopwords.words("english")
 class TextProcessorStage(PipelineStage):
     @staticmethod
     def lemmatize(text):
-        tokens = mystem.lemmatize(" ".join(text).lower())
+        tokens = mystem.lemmatize(text.lower())
         result = []
         for token in tokens:
             token = token.strip()
-            if is_russian(token) or is_belarusian(token) or is_english(token):
+            if is_russian(token) or is_belarusian(token) or is_english(token) or is_number(token):
                 result.append(token)
         return " ".join(result)
 
@@ -38,10 +38,11 @@ class StopwordsFilter(PipelineStage):
 
     @staticmethod
     def filter_stopwords(text):
+        text = text.split()
         result = []
         for word in text:
             if is_russian(word) and word not in russian_stopwords \
-                    or is_english(word) and word not in english_stopwords:
+                    or is_english(word) and word not in english_stopwords or is_number(word):
                 result.append(word)
         return " ".join(result)
 

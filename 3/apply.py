@@ -96,25 +96,40 @@ def main():
 
     result = {}
 
+    fid = {
+        "target" : "",
+        "qid" : "quid:",
+        "text_len" : "1:",
+        "url_len" : "2:",
+        "pagerank": "3:",
+        "query_len": "4:",
+        "query_words_len": "5:",
+        "match_body": "6:",
+        "match_title": "7:",
+        "window": "8:",
+        "BM25": "9:",
+    }
+
     for doc, queries in docs_to_queries.items():
         if doc not in doc_features:
             continue
         df = doc_features[doc]
         for q in queries:
+            print("Recording features for pair doc,qid: ", doc, q, file=sys.stderr)
+
             qf = query_features[q]
-            fs = {}
+            fs = {"target": int(doc in relevant[q]), "qid": q}
             fs.update(df)
             fs.update(qf)
             pair = "{}:{}".format(q, doc)
             fs.update(features[pair])
-            fs["target"] = int(doc in relevant[q])
 
             result[pair] = fs
 
     with open("dataset", 'w') as file:
         for pair, fs in result.items():
             for key, value in fs.items():
-                file.write("{}:{} ".format(key, value))
+                    file.write("{}{} ".format(fid[key], value))
             file.write("\n")
 
 
