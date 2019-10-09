@@ -35,8 +35,9 @@ def main():
 
     args = parser.parse_args()
 
-    relevant, irrelevant, docs_to_queries = load_relevant_docs(args.relevant)
+    relevant, irrelevant = load_relevant_docs(args.relevant)
     queries = load_queries(args.queries, relevant, irrelevant)
+    docs_to_queries = load_docs_to_queries(args.relevant, queries)
 
     features = {}
     query_features = {}

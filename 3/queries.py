@@ -30,7 +30,6 @@ def load_relevant_docs(relevant_path):
 
     relevant_docs = {}
     irrelevant_docs = {}
-    docs_to_queries = {}
 
     for task in tasks:
         qid = task.getAttribute("id")
@@ -40,12 +39,26 @@ def load_relevant_docs(relevant_path):
             doc_id = doc.getAttribute("id")
             if doc.getAttribute("relevance") == "vital":
                 relevant_docs[qid].append(doc_id)
-                update_docs_to_queries(docs_to_queries, qid, doc_id)
             if doc.getAttribute("relevance") == "notrelevant":
                 irrelevant_docs[qid].append(doc_id)
-                update_docs_to_queries(docs_to_queries, qid, doc_id)
 
-    return relevant_docs, irrelevant_docs, docs_to_queries
+    return relevant_docs, irrelevant_docs
+
+
+def load_docs_to_queries(relevant_path, queries):
+    tasks = minidom.parse(relevant_path).getElementsByTagName("task")
+    docs_to_queries = {}
+
+    for task in tasks:
+        qid = task.getAttribute("id")
+        if qid not in queries:
+            continue
+        for doc in task.getElementsByTagName("document"):
+            doc_id = doc.getAttribute("id")
+            relevance =  doc.getAttribute("relevance")
+            if relevance == "vital" or relevance == "notrelevant":
+                update_docs_to_queries(docs_to_queries, qid, doc_id)
+    return docs_to_queries
 
 
 def get_query_info(query):
