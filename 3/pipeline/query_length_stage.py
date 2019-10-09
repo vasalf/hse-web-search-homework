@@ -11,3 +11,4 @@ class QueryLengthStage(PipelineStage):
     def dump(self):
         for qid, text in self.queries.items():
             self.query_features[qid]["query_len"] = len(text)
+            self.query_features[qid]["query_words_len"] = len(text.split())

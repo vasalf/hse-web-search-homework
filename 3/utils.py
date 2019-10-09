@@ -3,10 +3,12 @@ import re
 russian = "абвгдеёжзийклмнопрстуфхцчшщьыъэюя"
 belarusian = "абвгдеёжзiйклмнопрстуўфхцчшьыэюя"
 english = "abcdefghijklmnopqrstuvwxyzéôïç"
+number = "0123456789"
 
 russian_re = re.compile("^[{}]+$".format(russian))
 belarusian_re = re.compile("^[{}]+$".format(belarusian))
 english_re = re.compile("^[{}]+$".format(english))
+number_re = re.compile("^[{}]+$".format(number))
 
 
 def is_russian(word):
@@ -19,6 +21,10 @@ def is_belarusian(word):
 
 def is_english(word):
     return english_re.search(word) is not None
+
+
+def is_number(word):
+    return number_re.search(word) is not None
 
 
 def init_query_features(queries, query_features):
