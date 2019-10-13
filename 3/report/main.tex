@@ -1,0 +1,50 @@
+\documentclass[twocolumn]{extarticle}
+
+\usepackage[T2A]{fontenc}          
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{subcaption}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{authblk}
+\usepackage[colorlinks,citecolor=red,urlcolor=blue,bookmarks=false,hypertexnames=true]{hyperref}
+\usepackage{geometry}
+\geometry{
+	a4paper,
+	total={170mm,257mm},
+	left=30mm,
+	top=20mm,
+}
+
+\title{Информационный поиск\\ Машинное обучение ранжированию (LETOR)}
+\author{Алфёров Василий, Швецова Анна, Казначеев Дмитрий}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    В третьем задании мы использовали методы машинного обучения для ранжирования поисковой выдачи в коллекции BY.WEB. Общей задачей было обучение разных моделей ранжирования на данных "Интернет-математика" и "BY.WEB" с оценками РОМИП 2008 года, оптимизируя метрику NDCG@20 \color{red}{ВАСЯ ПОПРАВЬ ЕСЛИ ЧТО} 
+\end{abstract}
+
+\section{Введение}
+
+В заданиях требовалось:
+
+\begin{itemize}
+\item Обучить модель ранжирования на готовых данных "Интернет-математика 2009" и сравнить поточечный, попарный и списочный методы
+\item Ознакомиться с признаками из набора данных LETOR и на оценках РОМИП 2008 года обучить модель для ранжирования, добавив несколько дополнительных признаков; проанализировать важность признаков
+\item Протестировать модель на оценках 2009 года.
+\end{itemize}
+
+Весь код из задания можно найти по 
+\href{https://github.com/vasalf/hse-web-search-homework/tree/master/3}{этой ссылке}.
+
+\include{1}
+
+\include{2}
+
+\end{document}
