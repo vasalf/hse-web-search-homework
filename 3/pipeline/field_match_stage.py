@@ -25,3 +25,7 @@ class FieldMatchStage(PipelineStage):
 
     def dump(self):
         pass
+
+
+def count_match(s1, s2):
+    return 1.0
